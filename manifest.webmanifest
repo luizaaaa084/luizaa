@@ -1,0 +1,49 @@
+{
+    "name": "Portal de Estudos — Foco, Tarefas e Progresso",
+    "short_name": "Estudo",
+    "description": "App de estudo offline com timer pomodoro, lista de tarefas e acompanhamento do progresso.",
+    "lang": "pt-BR",
+    "dir": "ltr",
+    "start_url": "./index.html",
+    "scope": "./",
+    "id": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#f2f5f9",
+    "theme_color": "#2457a7",
+    "categories": ["education", "productivity"],
+    "icons": [
+        {
+            "src": "icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "icons/icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Timer de foco",
+            "short_name": "Foco",
+            "url": "./index.html#foco",
+            "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Minhas tarefas",
+            "short_name": "Tarefas",
+            "url": "./index.html#tarefas",
+            "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+        }
+    ]
+}

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Portal de Estudos — Foco, Tarefas e Progresso</title>
+    <meta name="description" content="App de estudo offline: timer pomodoro, lista de tarefas e acompanhamento de progresso.">
+
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Estudo">
+    <meta name="theme-color" content="#2457a7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#12161f" media="(prefers-color-scheme: dark)">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+    <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🎓</span>
+        <div class="brand-text">
+            <h1>Portal de Estudos</h1>
+            <p>Foco, tarefas e progresso — funciona offline.</p>
+        </div>
+    </div>
+    <div class="header-actions">
+        <span id="offline-badge" class="badge" hidden>Offline</span>
+        <button id="install-btn" type="button" class="btn btn-ghost" hidden>Instalar</button>
+        <button id="theme-btn" type="button" class="btn btn-icon" aria-label="Alternar tema" title="Alternar tema">🌙</button>
+    </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Seções do app">
+    <button id="tab-btn-foco" class="tab is-active" type="button" role="tab" aria-selected="true" aria-controls="tab-foco">
+        <span aria-hidden="true">⏱️</span> Foco
+    </button>
+    <button id="tab-btn-tarefas" class="tab" type="button" role="tab" aria-selected="false" aria-controls="tab-tarefas" tabindex="-1">
+        <span aria-hidden="true">✅</span> Tarefas
+    </button>
+    <button id="tab-btn-progresso" class="tab" type="button" role="tab" aria-selected="false" aria-controls="tab-progresso" tabindex="-1">
+        <span aria-hidden="true">📊</span> Progresso
+    </button>
+</nav>
+
+<main class="app-main">
+
+    <!-- ============================ FOCO ============================ -->
+    <section id="tab-foco" class="panel is-active" role="tabpanel" aria-labelledby="tab-btn-foco" tabindex="-1">
+        <div class="timer-card">
+            <p id="timer-mode" class="timer-mode">Foco</p>
+
+            <div class="timer-ring">
+                <svg viewBox="0 0 200 200" aria-hidden="true">
+                    <circle class="ring-track" cx="100" cy="100" r="88"></circle>
+                    <circle id="ring-progress" class="ring-progress" cx="100" cy="100" r="88"></circle>
+                </svg>
+                <div class="timer-display">
+                    <time id="timer-value" datetime="PT25M">25:00</time>
+                    <span id="timer-cycle">Ciclo 1 de 4</span>
+                </div>
+            </div>
+
+            <div class="timer-actions">
+                <button id="btn-start" type="button" class="btn btn-primary">Iniciar</button>
+                <button id="btn-reset" type="button" class="btn">Reiniciar</button>
+                <button id="btn-skip" type="button" class="btn">Pular</button>
+            </div>
+
+            <p id="timer-status" class="timer-status" role="status" aria-live="polite">Pronto para começar.</p>
+        </div>
+
+        <div class="card">
+            <h2>Durações</h2>
+            <p class="card-hint">Ajuste os tempos dos ciclos do pomodoro.</p>
+            <div class="steppers">
+                <label class="stepper">
+                    <span>Foco</span>
+                    <input id="set-focus" type="number" min="1" max="90" step="1" inputmode="numeric">
+                    <span class="unit">min</span>
+                </label>
+                <label class="stepper">
+                    <span>Pausa curta</span>
+                    <input id="set-short" type="number" min="1" max="30" step="1" inputmode="numeric">
+                    <span class="unit">min</span>
+                </label>
+                <label class="stepper">
+                    <span>Pausa longa</span>
+                    <input id="set-long" type="number" min="1" max="60" step="1" inputmode="numeric">
+                    <span class="unit">min</span>
+                </label>
+            </div>
+            <label class="switch">
+                <input id="set-auto" type="checkbox">
+                <span>Iniciar a próxima etapa automaticamente</span>
+            </label>
+        </div>
+    </section>
+
+    <!-- =========================== TAREFAS =========================== -->
+    <section id="tab-tarefas" class="panel" role="tabpanel" aria-labelledby="tab-btn-tarefas" tabindex="-1" hidden>
+        <div class="card">
+            <h2>Nova tarefa</h2>
+            <form id="task-form" class="task-form">
+                <label class="sr-only" for="task-input">Descrição da tarefa</label>
+                <input id="task-input" type="text" placeholder="Ex.: Revisar capítulo 4 de História" maxlength="120" autocomplete="off" required>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <h2>Minhas tarefas</h2>
+                <span id="task-counter" class="pill">0/0</span>
+            </div>
+            <div class="progress"><div id="task-progress-bar" class="progress-bar" style="width:0%"></div></div>
+            <div class="filters" role="group" aria-label="Filtrar tarefas">
+                <button type="button" class="chip is-active" data-filter="all">Todas</button>
+                <button type="button" class="chip" data-filter="pending">Pendentes</button>
+                <button type="button" class="chip" data-filter="done">Concluídas</button>
+            </div>
+            <ul id="task-list" class="task-list"></ul>
+            <p id="task-empty" class="empty">Nenhuma tarefa por aqui. Adicione a primeira! ✍️</p>
+        </div>
+    </section>
+
+    <!-- ========================== PROGRESSO ========================== -->
+    <section id="tab-progresso" class="panel" role="tabpanel" aria-labelledby="tab-btn-progresso" tabindex="-1" hidden>
+        <div class="stats-grid">
+            <div class="stat">
+                <span class="stat-value" id="stat-minutes">0</span>
+                <span class="stat-label">minutos hoje</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-sessions">0</span>
+                <span class="stat-label">sessões hoje</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-tasks">0</span>
+                <span class="stat-label">tarefas feitas</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-streak">0</span>
+                <span class="stat-label">dias seguidos</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <h2>Meta diária</h2>
+                <span id="goal-label" class="pill">0%</span>
+            </div>
+            <div class="progress"><div id="goal-progress-bar" class="progress-bar" style="width:0%"></div></div>
+            <p class="card-hint">Meta: <strong id="goal-value">120</strong> minutos de foco por dia.</p>
+            <label class="stepper stepper-inline">
+                <span>Meta (min)</span>
+                <input id="set-goal" type="number" min="10" max="720" step="10" inputmode="numeric">
+            </label>
+        </div>
+
+        <div class="card">
+            <h2>Últimos 7 dias</h2>
+            <div id="chart" class="chart" role="img" aria-label="Minutos de foco nos últimos 7 dias"></div>
+        </div>
+
+        <div class="card">
+            <h2>Configurações</h2>
+            <label class="switch">
+                <input id="set-sound" type="checkbox">
+                <span>Som ao terminar o ciclo</span>
+            </label>
+            <label class="switch">
+                <input id="set-notify" type="checkbox">
+                <span>Notificações do navegador</span>
+            </label>
+            <div class="row-actions">
+                <button id="btn-export" type="button" class="btn">Exportar dados</button>
+                <label class="btn" for="import-file">Importar dados</label>
+                <input id="import-file" type="file" accept="application/json" hidden>
+                <button id="btn-reset-all" type="button" class="btn btn-danger">Apagar tudo</button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="app-footer">
+    <p>Portal de Estudos © <span id="year"></span> · PWA offline</p>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="script.js" defer></script>
+</body>
+</html>
